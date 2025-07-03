@@ -1,0 +1,63 @@
+﻿@model List<TicketPulse.Models.Conciertos>
+@{
+    ViewData["Title"] = "Conciertos de " + ViewBag.Categoria;
+    string[] imagenes = new string[]
+    {
+    // Indie
+    "https://cdn.pixabay.com/photo/2016/11/23/15/43/audience-1853662_1280.jpg",
+  
+    };
+
+
+}
+
+<section class="events-hero mb-5 p-4 text-center text-white rounded-4 shadow"
+         style="background: linear-gradient(90deg,#4F46E5 30%,#8F6BF6 100%); margin-top:80px;">
+    <i class="bi bi-music-note-beamed" style="font-size:2.5rem;"></i>
+    <h1 class="display-5 fw-bold mt-2 mb-1">@ViewBag.Categoria</h1>
+    <p class="lead mb-0">Descubre todos los conciertos de la categoría "@ViewBag.Categoria".</p>
+</section>
+
+<section class="container mb-5">
+    <div class="row g-4 justify-content-center">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var item in Model.Select((c, i) => new { Concierto = c, Index = i }))
+            {
+                var imagen = imagenes[item.Index % imagenes.Length];
+                <div class="col-12 col-sm-6 col-lg-3 d-flex">
+                    <a asp-controller="DetailsEvents" asp-action="Details" asp-route-id="@item.Concierto.IdConcierto" class="w-100 text-decoration-none">
+                        <div class="all-events-card h-100 d-flex flex-column position-relative">
+                            <div class="all-events-img-wrapper">
+                                <img src="@imagen"
+                                     class="all-events-img"
+                                     alt="@item.Concierto.Nombre">
+                            </div>
+                            <div class="card-body flex-grow-1 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="all-events-title mb-1">@item.Concierto.Nombre</div>
+                                    <div class="all-events-location mb-1"><i class="bi bi-geo-alt-fill"></i> @item.Concierto.Lugar, @item.Concierto.Provincia</div>
+                                    <div class="all-events-date mb-2"><i class="bi bi-calendar-event"></i> @item.Concierto.Fecha.ToString("dd/MM/yyyy")</div>
+                                </div>
+                                <div class="mt-2">
+                                    <span class="btn btn-gradient w-100 fw-bold"><i class="bi bi-ticket-perforated"></i> Ver detalles</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="all-events-card h-100 text-center shadow-sm py-5">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center" style="height:160px;">
+                        <h5 class="all-events-title">No hay conciertos en esta categoría.</h5>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

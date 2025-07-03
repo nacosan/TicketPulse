@@ -1,0 +1,330 @@
+﻿@model IEnumerable<TicketPulse.Models.Conciertos>
+
+@{
+    ViewData["Title"] = "Home Page";
+    string[] imagenes = new string[]
+    {
+        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
+        "https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=400&q=80"
+    };
+    var conciertos = Model?.ToList() ?? new List<TicketPulse.Models.Conciertos>();
+    var conciertosJson = System.Text.Json.JsonSerializer.Serialize(
+       conciertos.Select(c => new { id = c.IdConcierto, nombre = c.Nombre })
+    );
+}
+
+@section FullWidthHeader {
+    <div class="header-fullscreen">
+        <div class="card header-card text-bg-dark border-0 h-100 w-100">
+            <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1500&q=80"
+                 class="card-img object-fit-cover"
+                 alt="Concierto en vivo"
+                 style="object-fit: cover; width: 100%; height: 400px; min-height: 400px; max-height: 400px;">
+            <div class="card-img-overlay d-flex flex-column justify-content-center align-items-center">
+                <h5 class="card-title">Buscador</h5>
+                <p class="card-text">
+                    Busca los mejores conciertos solo aquí
+                </p>
+                <div class="position-relative w-50">
+                    <input id="buscadorConciertos" class="form-control me-2" type="search" placeholder="Buscar" autocomplete="off">
+                    <ul id="sugerenciasConciertos" class="list-group buscador-sugerencias"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<section class="container my-5">
+    <h2 class="mb-4 text-center">Eventos destacados</h2>
+    <div class="row g-4 justify-content-center align-items-stretch">
+        @if (conciertos.Any())
+        {
+            @foreach (var item in conciertos.Take(3).Select((c, i) => new { Concierto = c, Index = i }))
+            {
+                var imagen = imagenes[item.Index % imagenes.Length];
+                <div class="col-12 col-sm-6 col-lg-3 d-flex">
+                    <a asp-controller="DetailsEvents" asp-action="Details" asp-route-id="@item.Concierto.IdConcierto"
+                       class="all-events-link w-100 h-100">
+                        <div class="all-events-card h-100 d-flex flex-column">
+                            <div class="all-events-img-wrapper">
+                                <img src="@imagen"
+                                     class="all-events-img"
+                                     alt="@item.Concierto.Nombre">
+                            </div>
+                            <div class="card-body flex-grow-1 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="all-events-title">@item.Concierto.Nombre</div>
+                                    <div class="all-events-location mb-1"><i class="bi bi-geo-alt-fill"></i> @item.Concierto.Lugar, @item.Concierto.Provincia</div>
+                                    <div class="all-events-date"><i class="bi bi-calendar-event"></i> @item.Concierto.Fecha.ToString("dd/MM/yyyy")</div>
+                                </div>
+                                <div class="mt-3">
+                                    <span class="badge bg-success"><i class="bi bi-ticket-perforated"></i> Ver detalles</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            <div class="col-12 col-sm-6 col-lg-3 d-flex align-items-center">
+                <div class="w-100 d-flex flex-column align-items-center">
+                    <a href="/AllEvents/Index"
+                       class="btn btn-lg btn-white rounded-pill px-4 py-3 mb-2"
+                       style="background: #fff; color: #222; font-weight: 600; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+                        <i class="bi bi-arrow-right-circle" style="font-size: 2rem; vertical-align: middle;"></i>
+                    </a>
+                    <span style="color: #fff; font-weight: 500;">Ver todas</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="all-events-card h-100 text-center shadow-sm">
+                    <div class="all-events-img-wrapper" style="background:#232323"></div>
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center" style="height:160px;">
+                        <h5 class="all-events-title">No hay conciertos disponibles</h5>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+
+<section class="container my-5">
+    <h2 class="mb-4 text-center">Opiniones de nuestros usuarios</h2>
+    <div class="row justify-content-center g-4">
+        <div class="col-12 col-md-6">
+            <div class="opinion-card text-center">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Cliente" class="rounded-circle me-3" style="width:60px; height:60px; object-fit:cover; border:3px solid #eee;">
+                    <div>
+                        <h5 class="mb-0">Juan Pérez</h5>
+                        <small class="text-muted">Cliente verificado</small>
+                    </div>
+                </div>
+                <h6 class="mb-2">¡Una experiencia inolvidable!</h6>
+                <p class="mb-3">
+                    El proceso de compra fue rapidísimo y el concierto superó todas mis expectativas. ¡Repetiré sin duda!
+                </p>
+                <div class="stars mb-2">
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-half"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="opinion-card text-center">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Cliente" class="rounded-circle me-3" style="width:60px; height:60px; object-fit:cover; border:3px solid #eee;">
+                    <div>
+                        <h5 class="mb-0">María López</h5>
+                        <small class="text-muted">Cliente frecuente</small>
+                    </div>
+                </div>
+                <h6 class="mb-2">¡Todo perfecto!</h6>
+                <p class="mb-3">
+                    Me encantó la variedad de eventos y la facilidad para encontrar entradas. ¡Muy recomendable!
+                </p>
+                <div class="stars mb-2">
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="container my-5">
+    <h2 class="mb-4 text-center">¿Por qué TicketPulse?</h2>
+    <div class="row text-center g-4">
+        <div class="col-12 col-md-4">
+            <div class="card h-100 py-4">
+                <i class="bi bi-lightning-charge-fill" style="font-size:2.5rem; color:#3E5641;"></i>
+                <h5 class="mt-3">Compra rápida</h5>
+                <p>Adquiere tus entradas en segundos, sin complicaciones.</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card h-100 py-4">
+                <i class="bi bi-shield-check" style="font-size:2.5rem; color:#004D61;"></i>
+                <h5 class="mt-3">Seguridad garantizada</h5>
+                <p>Tus datos y pagos están protegidos con tecnología de punta.</p>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card h-100 py-4">
+                <i class="bi bi-stars" style="font-size:2.5rem; color:#822659;"></i>
+                <h5 class="mt-3">Eventos exclusivos</h5>
+                <p>Accede a los mejores conciertos y experiencias únicas.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@{
+    string[] imagenesCategorias = new string[]
+         {
+    "/images/categorias/Indie.jpg",
+    "/images/categorias/Jazz.jpg",
+    "/images/categorias/Música clásica.jpg",
+
+    "/images/categorias/Rock.jpg"
+
+         };
+
+    var categorias = ViewBag.Categorias as List<string> ?? new List<string>();
+    var rnd = new Random();
+}
+
+<section class="container my-5">
+    <h2 class="mb-4 text-center">Categorías destacadas</h2>
+    <div class="row g-4 justify-content-center">
+        @for (int i = 0; i < categorias.Take(3).Count(); i++)
+        {
+            var categoria = categorias[i];
+            var imagen = imagenesCategorias[i % imagenesCategorias.Length];
+            <div class="col-12 col-sm-6 col-lg-3">
+                <a href="@Url.Action("Details", "AllCategories", new { categoria = categoria })" style="text-decoration:none;">
+                    <div class="categoria-card position-relative overflow-hidden">
+                        <img src="@imagen" class="categoria-img w-100" alt="@categoria" />
+                        <div class="categoria-title-bg d-flex align-items-end justify-content-center">
+                            <span class="categoria-title">@categoria</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+
+
+        <div class="col-12 col-sm-6 col-lg-3 d-flex flex-column align-items-center justify-content-center">
+            <a href="/AllCategories/Index" class="btn btn-lg btn-white rounded-pill px-4 py-3 mb-2" style="background: #fff; color: #222; font-weight: 600; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+                <i class="bi bi-arrow-right-circle" style="font-size: 2rem; vertical-align: middle;"></i>
+            </a>
+            <span style="color: #fff; font-weight: 500;">Ver todas</span>
+        </div>
+    </div>
+</section>
+<script>
+    const conciertos = @Html.Raw(conciertosJson);
+
+    const input = document.getElementById('buscadorConciertos');
+    const sugerencias = document.getElementById('sugerenciasConciertos');
+
+    input.addEventListener('input', function () {
+        mostrarSugerencias(this.value);
+    });
+
+    input.addEventListener('focus', function () {
+        if (!this.value) {
+            mostrarSugerencias('', true);
+        }
+    });
+
+    input.addEventListener('blur', function () {
+        setTimeout(() => sugerencias.style.display = 'none', 150);
+    });
+
+    function mostrarSugerencias(valor, destacados = false) {
+        let matches = [];
+        if (destacados) {
+            matches = conciertos.slice(0, 3);
+        } else if (valor) {
+            matches = conciertos.filter(c => c.nombre.toLowerCase().includes(valor.toLowerCase()));
+        }
+        sugerencias.innerHTML = '';
+        if (matches.length === 0 && valor) {
+            sugerencias.innerHTML = '<li class="list-group-item text-center text-muted">No hay conciertos que coincidan</li>';
+        } else {
+            matches.forEach(c => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item list-group-item-action';
+                li.textContent = c.nombre;
+                li.style.cursor = 'pointer';
+                li.onclick = () => {
+                    window.location.href = `/DetailsEvents/Details/${c.id}`;
+                };
+                sugerencias.appendChild(li);
+            });
+        }
+        sugerencias.style.display = 'block';
+    }
+</script>
+<style>
+    .categoria-card {
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.24);
+        overflow: hidden;
+        position: relative;
+        height: 230px;
+        transition: transform 0.22s cubic-bezier(.4,2,.3,1), box-shadow 0.22s;
+        cursor: pointer;
+        background: #181818;
+        display: flex;
+        align-items: flex-end;
+    }
+
+        .categoria-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.34);
+        }
+
+    .categoria-img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        min-height: 230px;
+        filter: brightness(0.90);
+        transition: filter 0.22s;
+    }
+
+    .categoria-card:hover .categoria-img {
+        filter: brightness(1.08) blur(1px);
+    }
+
+    .categoria-title-bg {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: linear-gradient(0deg, rgba(0,0,0,0.92) 70%, rgba(0,0,0,0.2) 100%);
+        padding: 16px 0 10px 0;
+        text-align: center;
+    }
+
+    .categoria-title {
+        color: #fff;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: .5px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.22);
+        text-transform: capitalize;
+        display: block;
+    }
+
+    .buscador-sugerencias {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        max-height: 230px;
+        overflow-y: auto;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        border-radius: 0 0 12px 12px;
+        background: #fff;
+        z-index: 2000;
+        display: none;
+    }
+
+        #buscadorConciertos:focus + .buscador-sugerencias,
+        .buscador-sugerencias:hover {
+            display: block !important;
+        }
+</style>

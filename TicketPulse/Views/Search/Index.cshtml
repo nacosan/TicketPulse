@@ -1,0 +1,254 @@
+﻿@model List<TicketPulse.Models.Conciertos>
+@{
+    var categorias = ViewBag.Categorias as List<string> ?? new List<string>();
+    var paises = ViewBag.Paises as List<string> ?? new List<string>();
+    var provincias = ViewBag.Provincias as List<string> ?? new List<string>();
+    var filtros = Context.Request.Query;
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css">
+
+<section class="container my-5">
+    <div class="row">
+        <!-- Filtros -->
+        <div class="col-12 col-md-4 col-lg-3 mb-4">
+            <button class="btn btn-dark w-100 mb-3 d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosPanel" aria-expanded="false" aria-controls="filtrosPanel">
+                <i class="bi bi-funnel"></i> Filtros
+            </button>
+            <div class="collapse d-md-block show" id="filtrosPanel">
+                <form method="get" class="p-4 rounded shadow-sm filtros-dark">
+                    <h5 class="mb-4 text-white"><i class="bi bi-funnel"></i> Filtrar</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Categoría</label>
+                        <select name="Categoria" class="form-select">
+                            <option value="">Todas</option>
+                            @foreach (var cat in categorias)
+                            {
+                                if (filtros["Categoria"] == cat)
+                                {
+                                    <option value="@cat" selected>@cat</option>
+                                }
+                                else
+                                {
+                                    <option value="@cat">@cat</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white">Rango de precios</label>
+                        <div class="mb-2" id="sliderPrecio"></div>
+                        <div class="mb-3">
+                            <label class="form-label text-white">Rango de precios</label>
+                            <div class="mb-2" id="sliderPrecio"></div>
+                            <div class="d-flex justify-content-between">
+                                <input type="number" id="precioMin" name="PrecioMin" class="form-control form-control-sm bg-dark text-white border-secondary" style="width: 90px;" readonly />
+                                <input type="number" id="precioMax" name="PrecioMax" class="form-control form-control-sm bg-dark text-white border-secondary" style="width: 90px;" readonly />
+                            </div>
+                        </div>
+                        <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
+
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha desde</label>
+                        <input type="date" name="FechaMin" class="form-control" value="@filtros["FechaMin"]" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha hasta</label>
+                        <input type="date" name="FechaMax" class="form-control" value="@filtros["FechaMax"]" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">País</label>
+                        <select name="Pais" class="form-select">
+                            <option value="">Todos</option>
+                            @foreach (var pais in paises)
+                            {
+                                if (filtros["Pais"] == pais)
+                                {
+                                    <option value="@pais" selected>@pais</option>
+                                }
+                                else
+                                {
+                                    <option value="@pais">@pais</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Provincia</label>
+                        <select name="Provincia" class="form-select">
+                            <option value="">Todas</option>
+                            @foreach (var prov in provincias)
+                            {
+                                if (filtros["Provincia"] == prov)
+                                {
+                                    <option value="@prov" selected>@prov</option>
+                                }
+                                else
+                                {
+                                    <option value="@prov">@prov</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mt-3"><i class="bi bi-search"></i> Buscar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div class="col-12 col-md-8 col-lg-9">
+            <div class="row g-4">
+                @if (Model.Any())
+                {
+                    @foreach (var item in Model.Select((c, i) => new { Concierto = c, Index = i }))
+                    {
+                        <div class="col-12 col-md-6 col-lg-4 d-flex">
+                                              <a asp-controller="DetailsEvents" asp-action="Details" asp-route-id="@item.Concierto.IdConcierto"
+                       class="all-events-link w-100 h-100">
+
+                            <div class="all-events-card h-100 d-flex flex-column position-relative w-100">
+                        
+                                <div class="all-events-img-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80"
+                                         class="all-events-img"
+                                         alt="@item.Concierto.Nombre">
+                                </div>
+                                <div class="card-body flex-grow-1 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="all-events-title mb-1">@item.Concierto.Nombre</div>
+                                        <div class="all-events-location mb-1"><i class="bi bi-geo-alt-fill"></i> @item.Concierto.Lugar, @item.Concierto.Provincia</div>
+                                        <div class="all-events-date mb-2"><i class="bi bi-calendar-event"></i> @item.Concierto.Fecha.ToString("dd/MM/yyyy")</div>
+                                        @if (item.Concierto.Precio > 0)
+                                        {
+                                            <div class="event-price mb-2"><i class="bi bi-cash-coin"></i> @item.Concierto.Precio.ToString("C")</div>
+                                        }
+                                    </div>
+                                    <div class="mt-2">
+                                        <span class="btn btn-gradient w-100 fw-bold"><i class="bi bi-ticket-perforated"></i> Ver detalles</span>
+                                    </div>
+                                </div>
+                            </div>
+                            </a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">No hay conciertos que coincidan con los filtros.</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .filtros-dark {
+        background: #18181b;
+        color: #fff;
+        border: 1px solid #232323;
+    }
+
+        .filtros-dark label,
+        .filtros-dark .form-label,
+        .filtros-dark select,
+        .filtros-dark input,
+        .filtros-dark option {
+            color: #e0e0e0 !important;
+            background: #232323 !important;
+            border-color: #2a2a2a !important;
+        }
+
+    #sliderPrecio .noUi-connect {
+        background: linear-gradient(90deg, #4F46E5 0%, #8F6BF6 100%);
+    }
+
+    #sliderPrecio .noUi-handle {
+        border: 2px solid #4F46E5;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(79,70,229,0.15);
+    }
+
+    #sliderPrecio .noUi-tooltip {
+        background: #232323;
+        color: #fff;
+        border-radius: 8px;
+        border: 1px solid #4F46E5;
+        font-weight: 600;
+    }
+
+    #sliderPrecio .noUi-marker {
+        background: #8F6BF6;
+    }
+
+    #sliderPrecio .noUi-value {
+        color: #fff;
+    }
+
+ 
+    /* Circulitos para los pips (ticks) */
+    .noUi-pips .noUi-value {
+        display: none; /* Oculta los números */
+    }
+
+    .noUi-pips .noUi-marker {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%; /* Hace los pips circulares */
+        background: #4F46E5; /* Color violeta de tu app */
+        box-shadow: 0 0 5px rgba(79,70,229,0.4);
+        margin-top: -4px; /* Centra verticalmente */
+    }
+
+    .noUi-pips {
+        border: none !important; /* Quita la línea base */
+    }
+
+    /* Handles circulares y destacados */
+    .noUi-handle {
+        border-radius: 50% !important;
+        border: 2px solid #4F46E5 !important;
+        background: #fff !important;
+        width: 22px !important;
+        height: 22px !important;
+        box-shadow: 0 2px 8px rgba(79,70,229,0.15);
+    }
+
+        .noUi-handle:after, .noUi-handle:before {
+            display: none !important;
+        }
+
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
+<script>
+    var slider = document.getElementById('sliderPrecio');
+    noUiSlider.create(slider, {
+        start: [0, 200],
+        connect: true,
+        range: {
+            'min': 0,
+            'max': 200
+        },
+        step: 1,
+        tooltips: [true, true],
+        pips: {
+            mode: 'positions',
+            values: [0, 25, 50, 75, 100],
+            density: 4
+        },
+        format: {
+            to: value => Math.round(value),
+            from: value => Number(value)
+        }
+    });
+    slider.noUiSlider.on('update', function (values, handle) {
+        document.getElementById('precioMin').value = values[0];
+        document.getElementById('precioMax').value = values[1];
+    });
+</script>
+

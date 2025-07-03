@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Confirmación de compra";
+}
+
+<div class="main-content">
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                <div class="ticket-card p-5 text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill" style="font-size: 4rem; color: #4F46E5;"></i>
+                    </div>
+                    <h2 class="fw-bold mb-3" style="color: #E0E0E0;">¡Compra realizada con éxito!</h2>
+                    <p class="lead mb-4" style="color: #B0B0B0;">
+                        Gracias por confiar en <span class="fw-bold" style="color:#4F46E5;">TicketPulse</span>.<br>
+                        Tu pedido ha sido procesado correctamente.
+                    </p>
+                    <div class="ticket-card p-4 mb-4" style="background:#232323;">
+                        <h5 class="fw-bold mb-3" style="color: #E0E0E0;"><i class="bi bi-receipt-cutoff text-success"></i> Resumen de tu compra</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span style="color: #B0B0B0;">Concierto:</span>
+                            <span class="fw-bold" style="color: #fff;">@ViewBag.ConciertoNombre</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span style="color: #B0B0B0;">Fecha:</span>
+                            <span class="fw-bold" style="color: #fff;">@ViewBag.ConciertoFecha</span>
+                        </div>
+                        @if (ViewBag.CantidadEstandar > 0)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span style="color: #B0B0B0;">Entradas estándar:</span>
+                                <span class="fw-bold" style="color: #4F46E5;">@ViewBag.CantidadEstandar x @ViewBag.PrecioEstandar.ToString("C")</span>
+                            </div>
+                        }
+                        @if (ViewBag.CantidadVip > 0)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span style="color: #B0B0B0;">Entradas VIP:</span>
+                                <span class="fw-bold" style="color: #4F46E5;">@ViewBag.CantidadVip x @ViewBag.PrecioVip.ToString("C")</span>
+                            </div>
+                        }
+                        <hr style="border-color: #444;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold" style="color: #E0E0E0;">Total pagado</span>
+                            <span class="fw-bold h5" style="color: #4F46E5;">@ViewBag.TotalGeneral.ToString("C")</span>
+                        </div>
+                    </div>
+                    <p class="mb-4" style="color: #B0B0B0;">
+                        Recibirás un email con los detalles de tu compra y tus entradas.<br>
+                        ¡Disfruta del evento!
+                    </p>
+                    <a href="/" class="btn btn-lg btn-success rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="bi bi-house-door-fill me-2"></i> Volver a inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

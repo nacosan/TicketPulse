@@ -1,0 +1,143 @@
+﻿@model TicketPulse.Models.Conciertos
+@{
+    ViewData["Title"] = "Resumen - TicketPulse";
+    var usuario = ViewBag.Usuario ?? new TicketPulse.Models.Usuarios { IdUsuario = 1 }; // fallback
+}
+
+<div class="main-content">
+    <div class="container my-5">
+        <h2 class="mb-4 fw-bold">Resumen de compra</h2>
+        <form method="post" asp-action="Confirm">
+            <!-- CAMPOS OCULTOS PARA EL CONTROLADOR -->
+            <input type="hidden" name="ConciertoNombre" value="@ViewBag.ConciertoNombre" />
+            <input type="hidden" name="ConciertoFecha" value="@ViewBag.ConciertoFecha" />
+            <input type="hidden" name="cantidadEstandar" value="@ViewBag.CantidadEstandar" />
+            <input type="hidden" name="cantidadVip" value="@ViewBag.CantidadVip" />
+            <input type="hidden" name="PrecioEstandar" value="@ViewBag.PrecioEstandar" />
+            <input type="hidden" name="PrecioVip" value="@ViewBag.PrecioVip" />
+            <input type="hidden" name="TotalEstandar" value="@ViewBag.TotalEstandar" />
+            <input type="hidden" name="TotalVip" value="@ViewBag.TotalVip" />
+            <input type="hidden" name="TotalGeneral" value="@ViewBag.TotalGeneral" />
+            <input type="hidden" name="fullName" value="@ViewBag.FullName" />
+            <input type="hidden" name="email" value="@ViewBag.Email" />
+            <input type="hidden" name="IdUsuario" value="@usuario.IdUsuario" />
+            <input type="hidden" name="IdConcierto" value="@Model.IdConcierto" />
+            <input type="hidden" name="FechaAsistencia" value="@Model.Fecha.ToString("yyyy-MM-dd")" />
+            <input type="hidden" name="Cantidad" value="@(Convert.ToInt32(ViewBag.CantidadEstandar) + Convert.ToInt32(ViewBag.CantidadVip))" />
+            <input type="hidden" name="FechaCompra" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+
+            <div class="row g-4">
+                <!-- Información personal y método de pago -->
+                <div class="col-12 col-lg-8">
+                    <div class="ticket-card mb-4 p-4">
+                        <h5 class="fw-bold mb-4" style="color: #E0E0E0;">Información personal</h5>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: #B0B0B0;">Nombre completo</label>
+                            <input type="text" class="form-control bg-dark text-light border-secondary"
+                                   value="@ViewBag.FullName" name="fullName" style="background: #2A2A2A !important;" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: #B0B0B0;">Dirección de email</label>
+                            <input type="email" class="form-control bg-dark text-light border-secondary"
+                                   value="@ViewBag.Email" name="email" style="background: #2A2A2A !important;" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: #B0B0B0;">Número de teléfono</label>
+                            <input type="text" class="form-control bg-dark text-light border-secondary"
+                                   value="@ViewBag.Phone" name="phone" style="background: #2A2A2A !important;">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label" style="color: #B0B0B0;">Dirección completa</label>
+                            <input type="text" class="form-control bg-dark text-light border-secondary"
+                                   value="@ViewBag.BillingAddress" name="billingAddress" style="background: #2A2A2A !important;">
+                        </div>
+                    </div>
+
+                    <div class="ticket-card p-4">
+                        <h5 class="fw-bold mb-4" style="color: #E0E0E0;">Métodos de pago</h5>
+                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                            <li class="nav-item me-2" role="presentation">
+                                <button class="nav-link active" id="credit-tab" data-bs-toggle="pill"
+                                        data-bs-target="#credit" type="button" role="tab"
+                                        style="background: #4F46E5; border: none;">
+                                    Tarjeta de crédito
+                                </button>
+                            </li>
+                            <li class="nav-item me-2" role="presentation">
+                                <button class="nav-link" id="paypal-tab" data-bs-toggle="pill"
+                                        data-bs-target="#paypal" type="button" role="tab"
+                                        style="background: transparent; border: 1px solid #444; color: #E0E0E0;">
+                                    <i class="bi bi-paypal"></i> PayPal
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="credit" role="tabpanel">
+                                <div class="mb-3">
+                                    <label class="form-label" style="color: #B0B0B0;">Número de tarjeta</label>
+                                    <input type="text" class="form-control bg-dark text-light border-secondary"
+                                           placeholder="XXXX XXXX XXXX XXXX" name="cardNumber"
+                                           style="background: #2A2A2A !important;">
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <label class="form-label" style="color: #B0B0B0;">Fecha de caducidad</label>
+                                        <input type="text" class="form-control bg-dark text-light border-secondary"
+                                               placeholder="MM/YY" name="expiryDate"
+                                               style="background: #2A2A2A !important;">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label" style="color: #B0B0B0;">CVV</label>
+                                        <input type="text" class="form-control bg-dark text-light border-secondary"
+                                               placeholder="XXX" name="cvv"
+                                               style="background: #2A2A2A !important;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="paypal" role="tabpanel">
+                                <div class="alert alert-info">
+                                    Serás redirigido a PayPal para completar tu compra.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Resumen de compra -->
+                <div class="col-12 col-lg-4">
+                    <div class="ticket-card p-4">
+                        <h5 class="fw-bold mb-3" style="color: #E0E0E0;">Resumen de compra</h5>
+                        @if (Convert.ToInt32(ViewBag.CantidadEstandar) > 0)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span style="color: #B0B0B0;">
+                                    @ViewBag.ConciertoNombre - Entrada estándar
+                                    <span class="text-muted">x @ViewBag.CantidadEstandar</span>
+                                </span>
+                                <span class="fw-bold" style="color: #4F46E5;">@ViewBag.TotalEstandar.ToString("C")</span>
+                            </div>
+                        }
+                        @if (Convert.ToInt32(ViewBag.CantidadVip) > 0)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span style="color: #B0B0B0;">
+                                    @ViewBag.ConciertoNombre - Entrada VIP
+                                    <span class="text-muted">x @ViewBag.CantidadVip</span>
+                                </span>
+                                <span class="fw-bold" style="color: #4F46E5;">@ViewBag.TotalVip.ToString("C")</span>
+                            </div>
+                        }
+                        <hr style="border-color: #444;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="fw-bold" style="color: #E0E0E0;">Total</span>
+                            <span class="fw-bold h5" style="color: #4F46E5;">@ViewBag.TotalGeneral.ToString("C")</span>
+                        </div>
+                        <button type="submit" class="btn btn-lg w-100 fw-bold"
+                                style="background: #4F46E5; color: white; border: none; border-radius: 8px;">
+                            Confirmar compra
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
